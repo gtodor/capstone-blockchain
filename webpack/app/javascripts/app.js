@@ -27,6 +27,8 @@ window.App = {
     //MetaCoin.setProvider(web3.currentProvider);
     UEContract.setProvider(web3.currentProvider);
 
+    console.log(web3);
+
     // Get the initial account balance so it can be displayed.
     web3.eth.getAccounts(function(err, accs) {
       if (err != null) {
@@ -70,6 +72,7 @@ window.App = {
     UEContract.deployed().then(function(instance) {
       //check l'autorisation à un moment ?
       ue = instance;
+      console.log(ue);
       var nomResponsable = parseInt(document.getElementById("nomResponsable").value);
       var nomUE = document.getElementById("nomUE").value;
       var maxPlaces = document.getElementById("maxPlaces").value;
@@ -80,6 +83,7 @@ window.App = {
       var nomUE_element = document.getElementById("nomUE");
       var maxPlaces_element = document.getElementById("maxPlaces");
     }).catch(function(e) {
+      console.log(e);
       self.setStatus("Erreur à la création, voir les logs");
     });
   },
@@ -124,14 +128,15 @@ window.App = {
 
 window.addEventListener('load', function() {
   // Checking if Web3 has been injected by the browser (Mist/MetaMask)
-  if (typeof web3 !== 'undefined') {
+  if (typeof window.web3 !== 'undefined') {
     console.warn("Using web3 detected from external source. If you find that your accounts don't appear or you have 0 MetaCoin, ensure you've configured that source properly. If using MetaMask, see the following link. Feel free to delete this warning. :) http://truffleframework.com/tutorials/truffle-and-metamask")
     // Use Mist/MetaMask's provider
-    window.web3 = new Web3(web3.currentProvider);
+    window.web3 = new Web3(window.web3.currentProvider);
   } else {
-    console.warn("No web3 detected. Falling back to http://127.0.0.1:9545. You should remove this fallback when you deploy live, as it's inherently insecure. Consider switching to Metamask for development. More info here: http://truffleframework.com/tutorials/truffle-and-metamask");
+    //console.warn("No web3 detected. Falling back to http://127.0.0.1:9545. You should remove this fallback when you deploy live, as it's inherently insecure. Consider switching to Metamask for development. More info here: http://truffleframework.com/tutorials/truffle-and-metamask");
     // fallback - use your fallback strategy (local node / hosted node + in-dapp id mgmt / fail)
-    window.web3 = new Web3(new Web3.providers.HttpProvider("http://127.0.0.1:9545"));
+    //window.web3 = new Web3(new Web3.providers.HttpProvider("http://127.0.0.1:9545"));
+    console.error("Please use a web3 browser");
   }
 
   App.start();
