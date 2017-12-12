@@ -1,4 +1,8 @@
 Pour le développement on a utilisé le framework [truffle](http://truffleframework.com/docs/)
+### Requirement
+
+ * NodeJS 5.0+ recommended
+ 
 ### Installation de truffle
 
 npm install -g truffle
