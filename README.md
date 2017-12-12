@@ -32,6 +32,10 @@ npm install truffle
 
 Go to the application directory and run
 ```sh
+npm install
+```
+AND
+```sh
 truffle compile
 ```
 You should be able to run the application now, just start the run script
