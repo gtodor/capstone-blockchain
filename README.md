@@ -1,10 +1,11 @@
-# Projet Capstone
+# Projet Capstone 2017-2018
 
-Web app representatnt un systeme de inscription/validation des UE qui fonctionne comme smart contrat sur l'ethereum.
+Web app représentant un systeme d'inscription/validation des UE qui fonctionne comme un smart contrat sur l'ethereum.
+
 
 ### Requirements:
--Nodejs minimum version 5.0
--Npm minimum version 3.0
+- Nodejs minimum version 5.0
+- Npm minimum version 3.0
 
 # Installation
 Install the latest version of Nodejs and Npm:
