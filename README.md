@@ -19,20 +19,20 @@ sudo apt-get install -y nodejs
 The application directory is /blockchain-app
 
 Now you need to install truffle using NPM:
--Go to the application directory and use the following command
+- Go to the application directory and use the following command
 ```sh
 npm install truffle
 ```
 
 OR
 
--Install it globally for all your applications with the following command
+- Install it globally for all your applications with the following command
 
 ```sh
 npm install -g truffle
 ```
 
-Go to the application directory and run
+- Go to the application directory and run
 ```sh
 npm install
 ```
@@ -40,7 +40,7 @@ AND
 ```sh
 truffle compile
 ```
-You should be able to run the application now, just start the run script
+- You should be able to run the application now, just start the dev script
 ```sh
 npm run dev
 ```
