@@ -41,7 +41,8 @@ window.App = {
       }
 
       accounts = accs;
-      account = accounts[0];	  
+      account = accounts[0];
+	  document.getElementById("currentAccount").innerHTML = account;
 
       //self.refreshUE();
 				
@@ -53,6 +54,7 @@ window.App = {
 			opt.value = accounts[i];
 			accountList.appendChild(opt);
 		}
+			
     });
   },
 
@@ -82,23 +84,24 @@ window.App = {
       ue = instance;
       var nomResponsable = document.getElementById("nomResponsable").value;
       var nomUE = document.getElementById("nomUE").value;
-      var maxPlaces = parseInt(document.getElementById("maxPlaces").value);	  	        	 
-	  var contractInstance = UEContract.new(nomResponsable, nomUE, maxPlaces,{from: account, gas: 3000000}).then(function(value) {
-		// fulfillment
-		console.log(value);
+      var maxPlaces = parseInt(document.getElementById("maxPlaces").value);
+	  if(nomResponsable && 	nomUE && maxPlaces){
+	  var contractInstance = UEContract.new(nomResponsable, nomUE, maxPlaces,{from: web3.eth.accounts[0], gas: 3000000}).then(function(value) {
+		// fulfillment		
+		//refreching UEL list
+		refrechUEList(value);
+		self.setStatus("Création d'UE effectuée")
 		}, function(reason) {
 		// rejection
 		console.log(reason);
-		});;
-    }).then(function(value) {
-      self.setStatus("Création d'UE effectuée")
-      var nomResponsable_element = document.getElementById("nomResponsable");
-      var nomUE_element = document.getElementById("nomUE");
-      var maxPlaces_element = document.getElementById("maxPlaces");	  
+		});
+		}else{
+		self.setStatus("Champs vides!");
+	}
     }).catch(function(e) {
       self.setStatus("Erreur à la création, voir les logs");
 	  console.log(e);
-    });
+    });	
   },
 
   refreshBalance: function() {
@@ -142,6 +145,7 @@ window.App = {
 	{ 
 		// console.log(document.getElementById("accountList").selectedIndex);
 		account = accounts[document.getElementById("accountList").selectedIndex]; 
+		document.getElementById("currentAccount").innerHTML = account;
 		// console.log("Current account : " + account);
 	}
 
@@ -156,11 +160,22 @@ window.addEventListener('load', function() {
   } else {
     console.warn("No web3 detected. Falling back to http://127.0.0.1:8545. You should remove this fallback when you deploy live, as it's inherently insecure. Consider switching to Metamask for development. More info here: http://truffleframework.com/tutorials/truffle-and-metamask");
     // fallback - use your fallback strategy (local node / hosted node + in-dapp id mgmt / fail)
-    window.web3 = new Web3(new Web3.providers.HttpProvider("http://127.0.0.1:8545"));
-	//UEContract.web3.eth.defaultAccount=web3.eth.coinbase;
-	console.log(web3);
+    window.web3 = new Web3(new Web3.providers.HttpProvider("http://127.0.0.1:8545"));	
+	// console.log(web3);
   }
 
   App.start();
 });
 
+function refrechUEList(contractInstance)
+{  
+  contractInstance.get_ue_name.call({from: account})  
+	.then(function(receipt){
+	var node = document.createElement("LI");
+	var textnode = document.createTextNode(receipt);
+	node.appendChild(textnode);
+	document.getElementById("UEList").appendChild(node);	
+	});		
+  
+  
+}
