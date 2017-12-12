@@ -70,10 +70,10 @@ window.App = {
     UEContract.deployed().then(function(instance) {
       //check l'autorisation à un moment ?
       ue = instance;
-      var nomResponsable = parseInt(document.getElementById("nomResponsable").value);
+      var nomResponsable = document.getElementById("nomResponsable").value;
       var nomUE = document.getElementById("nomUE").value;
-      var maxPlaces = document.getElementById("maxPlaces").value;
-      ue.ue_contract.call(nomResponsable, nomUE, maxPlaces);
+      var maxPlaces = parseInt(document.getElementById("maxPlaces").value);	  	  
+      ue.ue_contract.call(nomResponsable, nomUE, maxPlaces);	  
     }).then(function(value) {
       self.setStatus("Création d'UE effectuée")
       var nomResponsable_element = document.getElementById("nomResponsable");
@@ -81,6 +81,7 @@ window.App = {
       var maxPlaces_element = document.getElementById("maxPlaces");
     }).catch(function(e) {
       self.setStatus("Erreur à la création, voir les logs");
+	  console.log(e);
     });
   },
 
@@ -129,9 +130,9 @@ window.addEventListener('load', function() {
     // Use Mist/MetaMask's provider
     window.web3 = new Web3(web3.currentProvider);
   } else {
-    console.warn("No web3 detected. Falling back to http://127.0.0.1:9545. You should remove this fallback when you deploy live, as it's inherently insecure. Consider switching to Metamask for development. More info here: http://truffleframework.com/tutorials/truffle-and-metamask");
+    console.warn("No web3 detected. Falling back to http://127.0.0.1:8545. You should remove this fallback when you deploy live, as it's inherently insecure. Consider switching to Metamask for development. More info here: http://truffleframework.com/tutorials/truffle-and-metamask");
     // fallback - use your fallback strategy (local node / hosted node + in-dapp id mgmt / fail)
-    window.web3 = new Web3(new Web3.providers.HttpProvider("http://127.0.0.1:9545"));
+    window.web3 = new Web3(new Web3.providers.HttpProvider("http://127.0.0.1:8545"));
   }
 
   App.start();
