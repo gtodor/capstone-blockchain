@@ -18,17 +18,27 @@
   <br><br>
   <br>
 -->
+   <p><b style="color:red">Warning! Dev mode required (F12)</b></p>
 
+   <h1>Comptes disponibles (à raffine plus tard)</h1>   
+   <select id="accountList" onchange="App.changeAccount()"></select>   
+   
+   <br>
+   <br>
+   
+	<h1 style="color:green">Compte selectionné:</h1><p id="currentAccount"></p>
   <br>
   <h1>Créer une UE </h1>
-  <br><label for="nomResponsable">Responsable de l'UE:</label><input type="text" id="nomResponsable" placeholder="Kathryn Janeway"></input>
-  <br><label for="nomUE">Nom de l'UE:</label><input type="text" id="nomUE" placeholder="Fonctionnement des moteurs de distorsion"></input>
-  <br><label for="maxPlaces">Places maximum:</label><input type="text" id="maxPlaces" placeholder="16"></input>
-
+  <div>
+  <br><label for="nomResponsable">Responsable de l'UE:</label><input type="text" id="nomResponsable" placeholder="Le nom du responsable"></input>
+  <br><label for="nomUE">Nom de l'UE:</label><input type="text" id="nomUE" placeholder="Le nom d'une UE"></input>
+  <br><label for="maxPlaces">Places maximum:</label><input type="text" id="maxPlaces" placeholder="nombre de places"></input>
   <br><br><button id="send" onclick="App.createUE()">Créer UE</button>
-
   <span id="status"></span>
-
-  <span class="hint"><strong>Hint:</strong> open the browser developer console to view any errors and warnings.</span>
+  <span class="hint"><strong></strong></span>
+  </div>
+  <br>
+  <h1>Liste des UE disponibles(exemple dynamique)</h1
+  <div><ul id="UEList"></ul></div>
 </body>
 </html>

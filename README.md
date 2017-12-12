@@ -1,3 +1,47 @@
-Projet Capstone
+# Projet Capstone 2017-2018
 
-Web app representatnt un systeme de inscription/validation des UE qui fonctionne comme smart contrat sur l'ethereum.
+Web app représentant un systeme d'inscription/validation des UE qui fonctionne comme un smart contrat sur l'ethereum.
+
+
+### Requirements:
+- Nodejs minimum version 5.0
+- Npm minimum version 3.0
+
+# Installation
+Install the latest version of Nodejs and Npm:
+https://nodejs.org/en/
+
+For linux users: 
+```sh
+sudo apt-get install -y nodejs
+```
+
+The application directory is /blockchain-app
+
+Now you need to install truffle using NPM:
+- Go to the application directory and use the following command
+```sh
+npm install truffle
+```
+
+OR
+
+- Install it globally for all your applications with the following command
+
+```sh
+npm install -g truffle
+```
+
+- Go to the application directory and run
+```sh
+npm install
+```
+AND
+```sh
+truffle compile
+```
+- You should be able to run the application now, just start the dev script
+```sh
+npm run dev
+```
+
