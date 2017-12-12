@@ -13,11 +13,12 @@ import uecontract_artifacts from '../../build/contracts/ue_contract.json'
 var MetaCoin = contract(metacoin_artifacts);
 var UEContract = contract(uecontract_artifacts);
 
+
 // The following code is simple to show off interacting with your contracts.
 // As your needs grow you will likely need to change its form and structure.
 // For application bootstrapping, check out window.addEventListener below.
 var accounts;
-var account;
+var account; // Current account
 
 window.App = {
   start: function() {
@@ -40,9 +41,18 @@ window.App = {
       }
 
       accounts = accs;
-      account = accounts[0];
+      account = accounts[0];	  
 
       //self.refreshUE();
+				
+		// display accounts list		
+		var accountList = document.getElementById('accountList');
+		for(var i = 0; i < accounts.length; i++) {
+			var opt = document.createElement('option');
+			opt.innerHTML = accounts[i];
+			opt.value = accounts[i];
+			accountList.appendChild(opt);
+		}
     });
   },
 
@@ -68,17 +78,23 @@ window.App = {
     var self = this;
     var ue;
     UEContract.deployed().then(function(instance) {
-      //check l'autorisation à un moment ?
+      //check l'autorisation à un moment ?	  
       ue = instance;
       var nomResponsable = document.getElementById("nomResponsable").value;
       var nomUE = document.getElementById("nomUE").value;
-      var maxPlaces = parseInt(document.getElementById("maxPlaces").value);	  	  
-      ue.ue_contract.call(nomResponsable, nomUE, maxPlaces);	  
+      var maxPlaces = parseInt(document.getElementById("maxPlaces").value);	  	        	 
+	  var contractInstance = UEContract.new(nomResponsable, nomUE, maxPlaces,{from: account, gas: 3000000}).then(function(value) {
+		// fulfillment
+		console.log(value);
+		}, function(reason) {
+		// rejection
+		console.log(reason);
+		});;
     }).then(function(value) {
       self.setStatus("Création d'UE effectuée")
       var nomResponsable_element = document.getElementById("nomResponsable");
       var nomUE_element = document.getElementById("nomUE");
-      var maxPlaces_element = document.getElementById("maxPlaces");
+      var maxPlaces_element = document.getElementById("maxPlaces");	  
     }).catch(function(e) {
       self.setStatus("Erreur à la création, voir les logs");
 	  console.log(e);
@@ -120,7 +136,15 @@ window.App = {
       console.log(e);
       self.setStatus("Error sending coin; see log.");
     });
-  }
+  },
+  
+  changeAccount: function ()
+	{ 
+		// console.log(document.getElementById("accountList").selectedIndex);
+		account = accounts[document.getElementById("accountList").selectedIndex]; 
+		// console.log("Current account : " + account);
+	}
+
 };
 
 window.addEventListener('load', function() {
@@ -133,7 +157,10 @@ window.addEventListener('load', function() {
     console.warn("No web3 detected. Falling back to http://127.0.0.1:8545. You should remove this fallback when you deploy live, as it's inherently insecure. Consider switching to Metamask for development. More info here: http://truffleframework.com/tutorials/truffle-and-metamask");
     // fallback - use your fallback strategy (local node / hosted node + in-dapp id mgmt / fail)
     window.web3 = new Web3(new Web3.providers.HttpProvider("http://127.0.0.1:8545"));
+	//UEContract.web3.eth.defaultAccount=web3.eth.coinbase;
+	console.log(web3);
   }
 
   App.start();
 });
+

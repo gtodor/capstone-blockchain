@@ -18,17 +18,23 @@
   <br><br>
   <br>
 -->
+   <h1>		
+   Comptes disponibles (à raffine plus tard)
+   </h1>
+   <select id="accountList" onchange="App.changeAccount()"></select>
 
   <br>
   <h1>Créer une UE </h1>
+  <div>
   <br><label for="nomResponsable">Responsable de l'UE:</label><input type="text" id="nomResponsable" placeholder="Kathryn Janeway"></input>
   <br><label for="nomUE">Nom de l'UE:</label><input type="text" id="nomUE" placeholder="Fonctionnement des moteurs de distorsion"></input>
   <br><label for="maxPlaces">Places maximum:</label><input type="text" id="maxPlaces" placeholder="16"></input>
-
   <br><br><button id="send" onclick="App.createUE()">Créer UE</button>
-
   <span id="status"></span>
-
-  <span class="hint"><strong>Hint:</strong> open the browser developer console to view any errors and warnings.</span>
+  <span class="hint"><strong></strong></span>
+  </div>
+  
+  <h1>Liste des UE disponibles</h1
+  <div id="UEList"><ul></ul></div>
 </body>
 </html>
