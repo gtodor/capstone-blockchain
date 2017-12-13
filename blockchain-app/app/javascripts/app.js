@@ -162,17 +162,10 @@ window.addEventListener('load', function() {
     // Use Mist/MetaMask's provider
     window.web3 = new Web3(window.web3.currentProvider);
   } else {
-<<<<<<< HEAD:webpack/app/javascripts/app.js
     //console.warn("No web3 detected. Falling back to http://127.0.0.1:9545. You should remove this fallback when you deploy live, as it's inherently insecure. Consider switching to Metamask for development. More info here: http://truffleframework.com/tutorials/truffle-and-metamask");
     // fallback - use your fallback strategy (local node / hosted node + in-dapp id mgmt / fail)
     //window.web3 = new Web3(new Web3.providers.HttpProvider("http://127.0.0.1:9545"));
     console.error("Please use a web3 browser");
-=======
-    console.warn("No web3 detected. Falling back to http://127.0.0.1:8545. You should remove this fallback when you deploy live, as it's inherently insecure. Consider switching to Metamask for development. More info here: http://truffleframework.com/tutorials/truffle-and-metamask");
-    // fallback - use your fallback strategy (local node / hosted node + in-dapp id mgmt / fail)
-    window.web3 = new Web3(new Web3.providers.HttpProvider("http://127.0.0.1:8545"));	
-	// console.log(web3);
->>>>>>> 9638f5e67899411614e10d38e8c7ec189d3ca908:blockchain-app/app/javascripts/app.js
   }
 
   App.start();
