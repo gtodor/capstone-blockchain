@@ -6,11 +6,9 @@ import { default as Web3} from 'web3';
 import { default as contract } from 'truffle-contract'
 
 // Import our contract artifacts and turn them into usable abstractions.
-import metacoin_artifacts from '../../build/contracts/MetaCoin.json'
 import uecontract_artifacts from '../../build/contracts/ue_contract.json'
 
-// MetaCoin is our usable abstraction, which we'll use through the code below.
-var MetaCoin = contract(metacoin_artifacts);
+// UEContract is our usable abstraction, which we'll use through the code below.
 var UEContract = contract(uecontract_artifacts);
 
 
@@ -47,8 +45,8 @@ window.App = {
 	  document.getElementById("currentAccount").innerHTML = account;
 
       //self.refreshUE();
-				
-		// display accounts list		
+
+		// display accounts list
 		var accountList = document.getElementById('accountList');
 		for(var i = 0; i < accounts.length; i++) {
 			var opt = document.createElement('option');
@@ -56,7 +54,7 @@ window.App = {
 			opt.value = accounts[i];
 			accountList.appendChild(opt);
 		}
-			
+
     });
   },
 
@@ -82,7 +80,7 @@ window.App = {
     var self = this;
     var ue;
     UEContract.deployed().then(function(instance) {
-      //check l'autorisation à un moment ?	  
+      //check l'autorisation à un moment ?
       ue = instance;
       console.log(ue);
       var nomResponsable = document.getElementById("nomResponsable").value;
@@ -90,9 +88,9 @@ window.App = {
       var maxPlaces = parseInt(document.getElementById("maxPlaces").value);
 	  if(nomResponsable && 	nomUE && maxPlaces){
 	  var contractInstance = UEContract.new(nomResponsable, nomUE, maxPlaces,{from: web3.eth.accounts[0], gas: 3000000}).then(function(value) {
-		// fulfillment		
+		// fulfillment
 		//refreching UEL list
-		refrechUEList(value);
+		refreshUEList(value);
 		self.setStatus("Création d'UE effectuée")
 		}, function(reason) {
 		// rejection
@@ -105,7 +103,7 @@ window.App = {
       console.log(e);
       self.setStatus("Erreur à la création, voir les logs");
 	  console.log(e);
-    });	
+    });
   },
 
   refreshBalance: function() {
@@ -124,31 +122,11 @@ window.App = {
     });
   },
 
-  sendCoin: function() {
-    var self = this;
 
-    var amount = parseInt(document.getElementById("amount").value);
-    var receiver = document.getElementById("receiver").value;
-
-    this.setStatus("Initiating transaction... (please wait)");
-
-    var meta;
-    MetaCoin.deployed().then(function(instance) {
-      meta = instance;
-      return meta.sendCoin(receiver, amount, {from: account});
-    }).then(function() {
-      self.setStatus("Transaction complete!");
-      self.refreshBalance();
-    }).catch(function(e) {
-      console.log(e);
-      self.setStatus("Error sending coin; see log.");
-    });
-  },
-  
   changeAccount: function ()
-	{ 
+	{
 		// console.log(document.getElementById("accountList").selectedIndex);
-		account = accounts[document.getElementById("accountList").selectedIndex]; 
+		account = accounts[document.getElementById("accountList").selectedIndex];
 		document.getElementById("currentAccount").innerHTML = account;
 		// console.log("Current account : " + account);
 	}
@@ -162,31 +140,24 @@ window.addEventListener('load', function() {
     // Use Mist/MetaMask's provider
     window.web3 = new Web3(window.web3.currentProvider);
   } else {
-<<<<<<< HEAD:webpack/app/javascripts/app.js
-    //console.warn("No web3 detected. Falling back to http://127.0.0.1:9545. You should remove this fallback when you deploy live, as it's inherently insecure. Consider switching to Metamask for development. More info here: http://truffleframework.com/tutorials/truffle-and-metamask");
-    // fallback - use your fallback strategy (local node / hosted node + in-dapp id mgmt / fail)
-    //window.web3 = new Web3(new Web3.providers.HttpProvider("http://127.0.0.1:9545"));
-    console.error("Please use a web3 browser");
-=======
     console.warn("No web3 detected. Falling back to http://127.0.0.1:8545. You should remove this fallback when you deploy live, as it's inherently insecure. Consider switching to Metamask for development. More info here: http://truffleframework.com/tutorials/truffle-and-metamask");
     // fallback - use your fallback strategy (local node / hosted node + in-dapp id mgmt / fail)
-    window.web3 = new Web3(new Web3.providers.HttpProvider("http://127.0.0.1:8545"));	
+    window.web3 = new Web3(new Web3.providers.HttpProvider("http://127.0.0.1:8545"));
 	// console.log(web3);
->>>>>>> 9638f5e67899411614e10d38e8c7ec189d3ca908:blockchain-app/app/javascripts/app.js
   }
 
   App.start();
 });
 
-function refrechUEList(contractInstance)
-{  
-  contractInstance.get_ue_name.call({from: account})  
+function refreshUEList(contractInstance)
+{
+  contractInstance.get_ue_name.call({from: account})
 	.then(function(receipt){
 	var node = document.createElement("LI");
 	var textnode = document.createTextNode(receipt);
 	node.appendChild(textnode);
-	document.getElementById("UEList").appendChild(node);	
-	});		
-  
-  
+	document.getElementById("UEList").appendChild(node);
+	});
+
+
 }
