@@ -6,11 +6,9 @@ import { default as Web3} from 'web3';
 import { default as contract } from 'truffle-contract'
 
 // Import our contract artifacts and turn them into usable abstractions.
-import metacoin_artifacts from '../../build/contracts/MetaCoin.json'
 import uecontract_artifacts from '../../build/contracts/ue_contract.json'
 
-// MetaCoin is our usable abstraction, which we'll use through the code below.
-var MetaCoin = contract(metacoin_artifacts);
+// UEContract is our usable abstraction, which we'll use through the code below.
 var UEContract = contract(uecontract_artifacts);
 
 
@@ -25,7 +23,6 @@ window.App = {
     var self = this;
 
     // Bootstrap the MetaCoin abstraction for Use.
-    //MetaCoin.setProvider(web3.currentProvider);
     UEContract.setProvider(web3.currentProvider);
 
     console.log(web3);
@@ -47,8 +44,8 @@ window.App = {
 	  document.getElementById("currentAccount").innerHTML = account;
 
       //self.refreshUE();
-				
-		// display accounts list		
+
+		// display accounts list
 		var accountList = document.getElementById('accountList');
 		for(var i = 0; i < accounts.length; i++) {
 			var opt = document.createElement('option');
@@ -56,7 +53,7 @@ window.App = {
 			opt.value = accounts[i];
 			accountList.appendChild(opt);
 		}
-			
+
     });
   },
 
@@ -82,7 +79,7 @@ window.App = {
     var self = this;
     var ue;
     UEContract.deployed().then(function(instance) {
-      //check l'autorisation à un moment ?	  
+      //check l'autorisation à un moment ?
       ue = instance;
       console.log(ue);
       var nomResponsable = document.getElementById("nomResponsable").value;
@@ -90,9 +87,9 @@ window.App = {
       var maxPlaces = parseInt(document.getElementById("maxPlaces").value);
 	  if(nomResponsable && 	nomUE && maxPlaces){
 	  var contractInstance = UEContract.new(nomResponsable, nomUE, maxPlaces,{from: web3.eth.accounts[0], gas: 3000000}).then(function(value) {
-		// fulfillment		
+		// fulfillment
 		//refreching UEL list
-		refrechUEList(value);
+		refreshUEList(value);
 		self.setStatus("Création d'UE effectuée")
 		}, function(reason) {
 		// rejection
@@ -105,50 +102,13 @@ window.App = {
       console.log(e);
       self.setStatus("Erreur à la création, voir les logs");
 	  console.log(e);
-    });	
-  },
-
-  refreshBalance: function() {
-    var self = this;
-
-    var meta;
-    MetaCoin.deployed().then(function(instance) {
-      meta = instance;
-      return meta.getBalance.call(account, {from: account});
-    }).then(function(value) {
-      var balance_element = document.getElementById("balance");
-      balance_element.innerHTML = value.valueOf();
-    }).catch(function(e) {
-      console.log(e);
-      self.setStatus("Error getting balance; see log.");
     });
   },
 
-  sendCoin: function() {
-    var self = this;
-
-    var amount = parseInt(document.getElementById("amount").value);
-    var receiver = document.getElementById("receiver").value;
-
-    this.setStatus("Initiating transaction... (please wait)");
-
-    var meta;
-    MetaCoin.deployed().then(function(instance) {
-      meta = instance;
-      return meta.sendCoin(receiver, amount, {from: account});
-    }).then(function() {
-      self.setStatus("Transaction complete!");
-      self.refreshBalance();
-    }).catch(function(e) {
-      console.log(e);
-      self.setStatus("Error sending coin; see log.");
-    });
-  },
-  
   changeAccount: function ()
-	{ 
+	{
 		// console.log(document.getElementById("accountList").selectedIndex);
-		account = accounts[document.getElementById("accountList").selectedIndex]; 
+		account = accounts[document.getElementById("accountList").selectedIndex];
 		document.getElementById("currentAccount").innerHTML = account;
 		// console.log("Current account : " + account);
 	}
@@ -171,15 +131,15 @@ window.addEventListener('load', function() {
   App.start();
 });
 
-function refrechUEList(contractInstance)
-{  
-  contractInstance.get_ue_name.call({from: account})  
+function refreshUEList(contractInstance)
+{
+  contractInstance.get_ue_name.call({from: account})
 	.then(function(receipt){
 	var node = document.createElement("LI");
 	var textnode = document.createTextNode(receipt);
 	node.appendChild(textnode);
-	document.getElementById("UEList").appendChild(node);	
-	});		
-  
-  
+	document.getElementById("UEList").appendChild(node);
+	});
+
+
 }
