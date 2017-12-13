@@ -23,7 +23,6 @@ window.App = {
     var self = this;
 
     // Bootstrap the MetaCoin abstraction for Use.
-    //MetaCoin.setProvider(web3.currentProvider);
     UEContract.setProvider(web3.currentProvider);
 
     console.log(web3);
@@ -106,23 +105,6 @@ window.App = {
     });
   },
 
-  refreshBalance: function() {
-    var self = this;
-
-    var meta;
-    MetaCoin.deployed().then(function(instance) {
-      meta = instance;
-      return meta.getBalance.call(account, {from: account});
-    }).then(function(value) {
-      var balance_element = document.getElementById("balance");
-      balance_element.innerHTML = value.valueOf();
-    }).catch(function(e) {
-      console.log(e);
-      self.setStatus("Error getting balance; see log.");
-    });
-  },
-
-
   changeAccount: function ()
 	{
 		// console.log(document.getElementById("accountList").selectedIndex);
@@ -140,10 +122,10 @@ window.addEventListener('load', function() {
     // Use Mist/MetaMask's provider
     window.web3 = new Web3(window.web3.currentProvider);
   } else {
-    console.warn("No web3 detected. Falling back to http://127.0.0.1:8545. You should remove this fallback when you deploy live, as it's inherently insecure. Consider switching to Metamask for development. More info here: http://truffleframework.com/tutorials/truffle-and-metamask");
+    //console.warn("No web3 detected. Falling back to http://127.0.0.1:9545. You should remove this fallback when you deploy live, as it's inherently insecure. Consider switching to Metamask for development. More info here: http://truffleframework.com/tutorials/truffle-and-metamask");
     // fallback - use your fallback strategy (local node / hosted node + in-dapp id mgmt / fail)
-    window.web3 = new Web3(new Web3.providers.HttpProvider("http://127.0.0.1:8545"));
-	// console.log(web3);
+    //window.web3 = new Web3(new Web3.providers.HttpProvider("http://127.0.0.1:9545"));
+    console.error("Please use a web3 browser");
   }
 
   App.start();
