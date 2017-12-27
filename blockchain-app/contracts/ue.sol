@@ -81,6 +81,7 @@ contract ue_manager{
         require(ue_addresses[ue_voulu] != 0);
         ue_contract ue_con = ue_contract(ue_addresses[ue_voulu]);
         address res = ue_con.get_students_address(msg.sender,index);
+        return res;
     }
     
     function get_number_of_enrolled_students(string ue_voulu) returns (uint){
