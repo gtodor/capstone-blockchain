@@ -21,7 +21,7 @@ contract ue_manager{
         
     }
     
-    function create_ue(string responsable_name, string UE_name, uint16 ue_total_places){
+    function create_ue(string responsable_name, string UE_name, uint16 ue_total_places) public{
         //verify that this function is called by a proffessor
         
         //verify that ue_name is not already existant
@@ -54,7 +54,7 @@ contract ue_manager{
         return string(bytesStringTrimmed);
     }
     
-    function enroll(string student_name, string ue_voulu) returns (bool){
+    function enroll(string student_name, string ue_voulu) public returns (bool){
         require(ue_addresses[ue_voulu] != 0x0);
         address addr = ue_addresses[ue_voulu];
         ue_contract ue_con = ue_contract(ue_addresses[ue_voulu]);
@@ -68,7 +68,7 @@ contract ue_manager{
         return res;
     }
     
-    function get_students_name(uint index, string ue_voulu) returns (string){
+    function get_students_name(uint index, string ue_voulu) public constant returns (string){
         require(bytes(responsables[msg.sender].name).length != 0);
         require(ue_addresses[ue_voulu] != 0);
         ue_contract ue_con = ue_contract(ue_addresses[ue_voulu]);
@@ -76,7 +76,7 @@ contract ue_manager{
         return bytes32ToString(res);
     }
     
-    function get_students_address(uint index, string ue_voulu) returns (address){
+    function get_students_address(uint index, string ue_voulu) public constant returns (address){
         require(bytes(responsables[msg.sender].name).length != 0);
         require(ue_addresses[ue_voulu] != 0);
         ue_contract ue_con = ue_contract(ue_addresses[ue_voulu]);
@@ -84,7 +84,7 @@ contract ue_manager{
         return res;
     }
     
-    function get_number_of_enrolled_students(string ue_voulu) returns (uint){
+    function get_number_of_enrolled_students(string ue_voulu) public constant returns (uint){
         require(bytes(responsables[msg.sender].name).length != 0);
         require(ue_addresses[ue_voulu] != 0);
         ue_contract ue_con = ue_contract(ue_addresses[ue_voulu]);
@@ -92,28 +92,28 @@ contract ue_manager{
         return res;
     }
     
-    function get_enrolled_ue() returns (address[]){
+    function get_enrolled_ue() public constant returns (address[]){
         //the caller needs to be a student
         require(bytes(students[msg.sender].name).length != 0);
         return students[msg.sender].enrolled_ue;
     }
     
-    function get_owned_ue() returns (address[]){
+    function get_owned_ue() public constant returns (address[]){
         //the caller needs to be a proffessor
         require(bytes(responsables[msg.sender].name).length != 0);
         return responsables[msg.sender].owned_ue;
     }
     
-    function get_ue_names(uint index) returns (string){
+    function get_ue_names(uint index) public constant returns (string){
         require(index>=0 && index < ue_names.length);
         return ue_names[index];
     }
     
-    function get_number_of_ue() returns (uint){
+    function get_number_of_ue() public constant returns (uint){
         return ue_names.length;
     }
     
-    function get_free_places(string ue) returns (uint){
+    function get_free_places(string ue) public constant returns (uint){
         require(ue_addresses[ue] != 0x0);
         ue_contract ue_con = ue_contract(ue_addresses[ue]);
         uint res = ue_con.get_free_places();
@@ -149,7 +149,7 @@ contract ue_contract{
         }
     }
     
-    function enroll(address student_addr, string student_name) returns (bool){
+    function enroll(address student_addr, string student_name) public returns (bool){
         require(student_addr != resp_addr);
         //require(students[student_addr].name.length == 0);
         if(remaining_places > 0){
@@ -163,30 +163,30 @@ contract ue_contract{
     }
     
     
-    function get_ue_name() returns (string){
+    function get_ue_name() public constant returns (string){
         return ue_name;
     }
     
-    function get_free_places() returns (uint16){
+    function get_free_places() public constant returns (uint16){
         return remaining_places;
     }
     
-    function get_total_places() returns (uint16){
+    function get_total_places() public constant returns (uint16){
         return total_places;
     }
     
-    function get_number_of_enrolled_students(address sender) returns (uint){
+    function get_number_of_enrolled_students(address sender) public constant returns (uint){
         require(sender == resp_addr);
         return student_index.length;
     }
     
-    function get_students_name(address sender, uint index) returns (bytes32){
+    function get_students_name(address sender, uint index) public constant returns (bytes32){
         require(sender == resp_addr);
         require(index>=0 && index < student_index.length);
         return students[student_index[index]].name;
     }
     
-    function get_students_address(address sender, uint index) returns (address){
+    function get_students_address(address sender, uint index) public constant returns (address){
         require(sender == resp_addr);
         require(index>=0 && index < student_index.length);
         return student_index[index];
