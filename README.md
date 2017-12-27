@@ -40,8 +40,17 @@ AND
 ```sh
 truffle compile
 ```
+
+- Check the doc file:  https://github.com/gtodor/capstone-blockchain/blob/master/documentation/liste.md
+
 - You should be able to run the application now, just start the dev script
 ```sh
 npm run dev
 ```
+**Important!** For some users the default port for EthereumJS is not 9545, in that case use the following command when you run TestRPC:
+```sh
+testrpc -p 9545
+```
+Make sure you are using this adress for the provider in the app.js: http://127.0.0.1:9545
+
 
