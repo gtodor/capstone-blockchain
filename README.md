@@ -40,6 +40,21 @@ AND
 ```sh
 truffle compile
 ```
+```truffle migrate --network <development or rinkeby>```
+
+after you need the addresses of the deployed contracts so:
+
+```truffle networks``` and copy address of ue_manager then :
+
+```truffle console```
+
+in the console
+
+```SmartIdentity.deployed().then(function(inst){ return inst.setOwner('<ue_manager address>');})```
+
+then copy the address of SmartIdentity (use ```truffle networks```) and do in the console:
+
+```ue_manager.deployed().then(function(inst){ return inst.createSmartId('<SmartIdentity address>')```
 
 - Check the doc file:  https://github.com/gtodor/capstone-blockchain/blob/master/documentation/liste.md
 

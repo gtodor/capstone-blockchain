@@ -1,8 +1,13 @@
 pragma solidity ^0.4.0;
 
+import "./ue_contract.sol";
+import "./smartid.sol";
+
 contract ue_manager{
     mapping (string => address) ue_addresses;
+    mapping (address => string) ue_names_map;
     string[] ue_names;
+    address professorsIdContract = 0x0;
     
     struct student{
         string name;
@@ -17,17 +22,36 @@ contract ue_manager{
     mapping (address => student) students;
     mapping (address => responsable) responsables;
     
+    address private owner;
+    
     function ue_manager(){
-        
+        owner = msg.sender;
     }
     
-    function create_ue(string responsable_name, string UE_name, uint16 ue_total_places) public{
-        //verify that this function is called by a proffessor
-        
+    function createSmartId(address addr) public returns (address){
+        if(professorsIdContract == 0x0){
+            //professorsIdContract = new SmartIdentity();
+            professorsIdContract = addr;
+            SmartIdentity professorId = SmartIdentity(professorsIdContract);
+            professorId.addAttribute("professor");
+            professorId.addEndorsement("professor","urbain");
+        }
+        return professorsIdContract;
+    }
+    
+    /**
+     * _hash is a chain that is used to identify the sender. it could be the owner address
+     * his public key or anythig else that could be verified 
+     * by the one who created this ue_manager contract
+     */
+    function create_ue(bytes32 _hash, string responsable_name, string UE_name, uint16 ue_total_places) public{
+        //verify that this function is called by a professor
+        require(isProfessorValid(_hash) == true);
         //verify that ue_name is not already existant
         require(ue_addresses[UE_name] == 0x0);
         address ue = new ue_contract(msg.sender, responsable_name, UE_name, ue_total_places);
         ue_addresses[UE_name] = ue;
+        ue_names_map[ue] = UE_name;
         if(bytes(responsables[msg.sender].name).length == 0){
             responsables[msg.sender] = responsable(responsable_name,new address[](0));
             responsables[msg.sender].owned_ue.push(ue);
@@ -36,6 +60,30 @@ contract ue_manager{
         }
         ue_names.push(UE_name);
     }
+    
+    function isProfessorValid(bytes32 _hash) public returns(bool){
+        SmartIdentity professorId = SmartIdentity(professorsIdContract);
+        bool res = professorId.checkEndorsementExists("professor",_hash);
+        return res;
+    }
+    
+    function getSmartIdContractAddress() public constant returns(address){
+        return professorsIdContract;
+    }
+    
+    function askProfessorValidation(bytes32 _hash) public returns(bool){
+        SmartIdentity professorId = SmartIdentity(professorsIdContract);
+        bool res = professorId.addEndorsement("professor",_hash);
+        return res;
+    }
+    
+    function giveProfessorValidation(bytes32 _hash) public returns(bool){
+        require(msg.sender == owner);
+        SmartIdentity professorId = SmartIdentity(professorsIdContract);
+        bool res = professorId.acceptEndorsement("professor",_hash);
+        return res;
+    }
+    
     
     function bytes32ToString(bytes32 x) constant returns (string) {
         bytes memory bytesString = new bytes(32);
@@ -53,6 +101,7 @@ contract ue_manager{
         }
         return string(bytesStringTrimmed);
     }
+    
     
     function enroll(string student_name, string ue_voulu) public returns (bool){
         require(ue_addresses[ue_voulu] != 0x0);
@@ -74,6 +123,7 @@ contract ue_manager{
         ue_contract ue_con = ue_contract(ue_addresses[ue_voulu]);
         bytes32 res = ue_con.get_students_name(msg.sender,index);
         return bytes32ToString(res);
+        //return res;
     }
     
     function get_students_address(uint index, string ue_voulu) public constant returns (address){
@@ -82,6 +132,15 @@ contract ue_manager{
         ue_contract ue_con = ue_contract(ue_addresses[ue_voulu]);
         address res = ue_con.get_students_address(msg.sender,index);
         return res;
+    }
+    
+    function get_student_info(address ue_addr) public constant returns (string,bool,string){
+        require(bytes(ue_names_map[ue_addr]).length != 0);
+        ue_contract ue_con = ue_contract(ue_addr);
+        bytes32 name;
+        bool status;
+        (name, status) = ue_con.get_student_info(msg.sender);
+        return (bytes32ToString(name), status, ue_names_map[ue_addr]);
     }
     
     function get_number_of_enrolled_students(string ue_voulu) public constant returns (uint){
@@ -120,83 +179,4 @@ contract ue_manager{
         return res;
     }
     
-}
-
-
-contract ue_contract{
-    struct student{
-        bytes32 name;
-        uint index;
-    }
-    
-    address resp_addr;
-    string resp_name;
-    string ue_name;
-    uint16 remaining_places;
-    uint16 total_places;
-    
-    mapping (address => student) students;
-    address[] student_index;
-    
-    function stringToBytes32(string memory source) returns (bytes32 result) {
-        bytes memory tempEmptyStringTest = bytes(source);
-        if (tempEmptyStringTest.length == 0) {
-            return 0x0;
-        }
-
-        assembly {
-            result := mload(add(source, 32))
-        }
-    }
-    
-    function enroll(address student_addr, string student_name) public returns (bool){
-        require(student_addr != resp_addr);
-        //require(students[student_addr].name.length == 0);
-        if(remaining_places > 0){
-            student_index.push(student_addr);
-            students[student_addr] = student(stringToBytes32(student_name),student_index.length);
-            remaining_places--;
-            return true;
-        }else{
-            return false;
-        }
-    }
-    
-    
-    function get_ue_name() public constant returns (string){
-        return ue_name;
-    }
-    
-    function get_free_places() public constant returns (uint16){
-        return remaining_places;
-    }
-    
-    function get_total_places() public constant returns (uint16){
-        return total_places;
-    }
-    
-    function get_number_of_enrolled_students(address sender) public constant returns (uint){
-        require(sender == resp_addr);
-        return student_index.length;
-    }
-    
-    function get_students_name(address sender, uint index) public constant returns (bytes32){
-        require(sender == resp_addr);
-        require(index>=0 && index < student_index.length);
-        return students[student_index[index]].name;
-    }
-    
-    function get_students_address(address sender, uint index) public constant returns (address){
-        require(sender == resp_addr);
-        require(index>=0 && index < student_index.length);
-        return student_index[index];
-    }
-    
-    function ue_contract(address responsable_address, string responsable_name, string UE_name, uint16 ue_total_places){
-        resp_addr = responsable_address;
-        resp_name = responsable_name;
-        ue_name = UE_name;
-        total_places = ue_total_places;
-        remaining_places = ue_total_places;
-    }
 }
