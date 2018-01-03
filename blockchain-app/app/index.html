@@ -3,11 +3,77 @@
 <head>
   <title>UE Contract first DAPP page</title>
   <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
   <script src="./app.js"></script>
 </head>
 <body>
 
-   <p><b style="color:red">Warning! Dev mode required (F12)</b></p>
+  <header class="container-fluid">
+    <div class="row">
+      <div class="pull-right">
+          <h3>Log in as teacher</h3>
+          <form class="form-inline">
+              <div class="form-group">
+                  <label class="control-label" for="professorHash">Hash</label>
+                  <input type="text" class="form-control" id="professorHash" placeholder="Hash">
+                  <button type="submit" onclick="App.loginTeacher()" class="btn btn-default">Submit</button>
+              </div>
+          </form>
+          <span id="infoMessage"></span>
+      </div>
+    </div>
+  </header>
+
+  <div class="container-fluid">
+      <div class="row">
+        <h1>UE Enrolled List</h1>
+        <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">UE name</th>
+                <th scope="col">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">1</th>
+                <td>ipi</td>
+                <td>Not Validated</td>
+              </tr>
+              <tr>
+                <th scope="row">2</th>
+                <td>ilo</td>
+                <td>Validated</td>
+              </tr>
+              <tr>
+                <th scope="row">3</th>
+                <td>maths</td>
+                <td>Validated</td>
+              </tr>
+            </tbody>
+          </table>
+      </div>
+      <div class="row">
+          <h3>Enroll</h3>
+          <form class="form-inline">
+              <div class="form-group">
+                  <label class="control-label" for="ueSelect">Choose UE</label>
+                  <select class="form-control" id="ueSelect" placeholder="Choose UE">
+                      <option>1</option>
+                      <option>2</option>
+                      <option>3</option>
+                      <option>4</option>
+                      <option>5</option>
+                  </select>
+                  <button type="submit" class="btn btn-default">Enroll</button>
+              </div>
+          </form>
+      </div>
+  </div>
+  
+
+   <!--<p><b style="color:red">Warning! Dev mode required (F12)</b></p>
 
    <h1>Comptes disponibles (à raffiner plus tard)</h1>
    <select id="accountList" onchange="App.changeAccount()"></select>
@@ -29,5 +95,16 @@
   <br>
   <h1>Liste des UE disponibles(exemple dynamique)</h1
   <div><ul id="UEList"></ul></div>
+  
+  <h1>Ask To Be Professor</h1>
+  <label>Hash: </label><input type="text" id="hash"/>
+  <br><button id="send" onclick="App.askToBeProfessor()">Submit</button>
+
+  <br><button onclick="App.getEnrolledUEs()">Get getEnrolledUEs</button>-->
+
+  <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <!-- Include all compiled plugins (below), or include individual files as needed -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 </body>
 </html>

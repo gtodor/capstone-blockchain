@@ -3,13 +3,14 @@ import "../stylesheets/app.css";
 
 // Import libraries we need.
 import { default as Web3} from 'web3';
-import { default as contract } from 'truffle-contract'
+import { default as contract } from 'truffle-contract';
 
 // Import our contract artifacts and turn them into usable abstractions.
-import uecontract_artifacts from '../../build/contracts/ue_contract.json'
+//import uecontract_artifacts from '../../build/contracts/ue_contract.json'
+import uemanager_artifacts from '../../build/contracts/ue_manager.json'
 
 // UEContract is our usable abstraction, which we'll use through the code below.
-var UEContract = contract(uecontract_artifacts);
+var UEManager = contract(uemanager_artifacts);
 
 
 // The following code is simple to show off interacting with your contracts.
@@ -17,13 +18,14 @@ var UEContract = contract(uecontract_artifacts);
 // For application bootstrapping, check out window.addEventListener below.
 var accounts;
 var account; // Current account
+var enrolledUEs = [];//all the ue where the student is enroled
 
 window.App = {
   start: function() {
     var self = this;
 
     // Bootstrap the MetaCoin abstraction for Use.
-    UEContract.setProvider(web3.currentProvider);
+    UEManager.setProvider(web3.currentProvider);
 
     console.log(web3);
 
@@ -41,18 +43,19 @@ window.App = {
 
       accounts = accs;
       account = accounts[0];
-	  document.getElementById("currentAccount").innerHTML = account;
+      web3.eth.defaultAccount = account;
+	    document.getElementById("currentAccount").innerHTML = account;
 
       //self.refreshUE();
 
-		// display accounts list
-		var accountList = document.getElementById('accountList');
-		for(var i = 0; i < accounts.length; i++) {
-			var opt = document.createElement('option');
-			opt.innerHTML = accounts[i];
-			opt.value = accounts[i];
-			accountList.appendChild(opt);
-		}
+		  // display accounts list
+		  var accountList = document.getElementById('accountList');
+		  for(var i = 0; i < accounts.length; i++) {
+			  var opt = document.createElement('option');
+			  opt.innerHTML = accounts[i];
+			  opt.value = accounts[i];
+			  accountList.appendChild(opt);
+		  }
 
     });
   },
@@ -75,6 +78,48 @@ window.App = {
 
   //creating an UE
 
+  //ask permission to be a teacher
+
+  askToBeProfessor : function(hash){
+    UEManager.deployed().then(function(instance) {
+      var ue_manager = instance;
+      console.log(ue_manager);
+      console.log(web3);
+      console.log(web3.eth.defaultAccount);
+      ue_manager.askProfessorValidation(hash, function(res,err){
+        if(err === null){
+          console.log("result = "+res);
+          document.getElementById("infoMessage").innerHTML = "Hash stored on blockchain. Send an email to aaa@bbb.ccc to validate your hash";
+        }
+      });
+    })
+  },
+
+  isProfessorValid: function(hash){
+    UEManager.deployed().then(function(instance){
+      instance.isProfessorValid(hash, function(res, err){
+        if(err === null){
+          console.log("res = "+res);
+          return true;
+        }else{
+          console("there was an error in isProfessorValid()");
+          return false;
+        }
+      })
+    })
+  },
+
+  loginTeacher: function(){
+    var hash = document.getElementById("professorHash").value;
+    console.log(hash);
+    if(this.isProfessorValid(hash)){
+      //route to teacher page
+    }else{
+      this.askToBeProfessor(hash);
+    }
+  },
+
+  /*
   createUE: function() {
     var self = this;
     var ue;
@@ -103,6 +148,28 @@ window.App = {
       self.setStatus("Erreur à la création, voir les logs");
 	  console.log(e);
     });
+  },*/
+
+  getEnrolledUEs : function (){
+    var ue_manager;
+    UEManager.deployed().then(function(instance){
+      ue_manager = instance;
+      var enrolledUEAddresses = [];
+      ue_manager.get_enrolled_ue(function(res,err){
+        if (err === null){
+          enrolledUEAddresses = res;
+          enrolledUEAddresses.forEach(element => {
+            ue_manager.get_student_info(element,function(res){
+              enrolledUEs.push(res);
+              console.log(res);
+              //console.log(enrolledUEs);
+            })
+          });
+        }
+      })
+    }).then(function(){
+      console.log(enrolledUEs);
+    })
   },
 
   changeAccount: function ()
@@ -140,6 +207,4 @@ function refreshUEList(contractInstance)
 	node.appendChild(textnode);
 	document.getElementById("UEList").appendChild(node);
 	});
-
-
 }
