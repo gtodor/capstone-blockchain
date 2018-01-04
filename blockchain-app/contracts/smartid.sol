@@ -228,7 +228,7 @@ contract SmartIdentity {
     /**
      * Checks that an endorsement _endorsementHash exists for the attribute _attributeHash.
      */
-    function checkEndorsementExists(bytes32 _attributeHash, bytes32 _endorsementHash) returns(bool) {
+    function checkEndorsementExists(bytes32 _attributeHash, bytes32 _endorsementHash) constant returns(bool) {
         var attribute = attributes[_attributeHash];
         if (attribute.hash != _attributeHash) {
             sendEvent(ERROR_EVENT, "Attribute doesn't exist");

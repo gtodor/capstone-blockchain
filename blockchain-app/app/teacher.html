@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>UE Contract first DAPP page</title>
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <script src="./app.js"></script>
+</head>
+<body>
+    <header></header>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-6">
+                <h1>UE Owned : </h1>
+            </div>
+            <div class="col-md-6">
+                <form class="form-inline">
+                    <div class="form-group">
+                        <label class="control-label" for="ownedUESelect">Choose Owned UE</label>
+                        <select class="form-control" id="ownedUE" placeholder="Choose Owned UE">
+                            <option>1</option>
+                            <option>2</option>
+                            <option>3</option>
+                            <option>4</option>
+                            <option>5</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="row">
+            <h1 id="ownedUEName"></h1>
+            <table class="table">
+                <thead>
+                    <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                    <th scope="row">1</th>
+                    <td>Lars</td>
+                    <td><button class="btn btn-default" onclick="App.validateStudentUE()">Validate</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="row">
+            <h1>Créer une UE </h1>
+            <form class="form-horizontal">
+                <div class="form-group">
+                    <label class="col-sm-2 control-label" for="nomResponsable">Responsable de l'UE:</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="nomResponsable" placeholder="Le nom du responsable"></input>
+                    </div>                    
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label" for="nomUE">Nom de l'UE:</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="nomUE" placeholder="Le nom d'une UE"></input>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label" for="maxPlaces">Places maximum:</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="maxPlaces" placeholder="nombre de places"></input>
+                    </div>
+                </div>
+                <button id="send" onclick="App.createUE()">Créer UE</button>
+            </form>
+        </div>
+    </div>
+
+  
+  <!--<br>
+  <h1>Liste des UE disponibles(exemple dynamique)</h1
+  <div><ul id="UEList"></ul></div>-->
+
+  <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <!-- Include all compiled plugins (below), or include individual files as needed -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+</body>
+</html>

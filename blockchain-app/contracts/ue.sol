@@ -61,7 +61,7 @@ contract ue_manager{
         ue_names.push(UE_name);
     }
     
-    function isProfessorValid(bytes32 _hash) public returns(bool){
+    function isProfessorValid(bytes32 _hash) public constant returns(bool){
         SmartIdentity professorId = SmartIdentity(professorsIdContract);
         bool res = professorId.checkEndorsementExists("professor",_hash);
         return res;

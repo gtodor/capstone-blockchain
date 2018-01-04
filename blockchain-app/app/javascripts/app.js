@@ -83,40 +83,43 @@ window.App = {
   askToBeProfessor : function(hash){
     UEManager.deployed().then(function(instance) {
       var ue_manager = instance;
-      console.log(ue_manager);
-      console.log(web3);
-      console.log(web3.eth.defaultAccount);
-      ue_manager.askProfessorValidation(hash, function(res,err){
-        if(err === null){
-          console.log("result = "+res);
-          document.getElementById("infoMessage").innerHTML = "Hash stored on blockchain. Send an email to aaa@bbb.ccc to validate your hash";
-        }
-      });
-    })
-  },
-
-  isProfessorValid: function(hash){
-    UEManager.deployed().then(function(instance){
-      instance.isProfessorValid(hash, function(res, err){
-        if(err === null){
-          console.log("res = "+res);
-          return true;
-        }else{
-          console("there was an error in isProfessorValid()");
-          return false;
-        }
-      })
+      var txhash = ue_manager.askProfessorValidation.sendTransaction(hash,{from:account,gas:4700000});
+      return txhash;
+    }).then(function(res){
+      console.log("resultat = "+res);
+      document.getElementById("infoMessage").innerHTML = "hash stored on blockchain. send an email to aaa@bbb.ccc with your hash to be accepted";
+      return res;
+    }).catch(function(e){
+      console.log("ERROR: "+e);
     })
   },
 
   loginTeacher: function(){
     var hash = document.getElementById("professorHash").value;
     console.log(hash);
-    if(this.isProfessorValid(hash)){
-      //route to teacher page
-    }else{
-      this.askToBeProfessor(hash);
-    }
+    var self = this;
+    UEManager.deployed().then(function(instance){
+      console.log(account);
+      return instance.isProfessorValid.call(hash,{from:account});
+    }).then(function(res){
+      console.log("result = "+ res);
+      if(res === true){
+        //route to teacher page
+        //document.getElementById('infoMessage').innerHTML = "Proffessor is accepted. Transfering to your page ...";
+        window.location = 'http://localhost:8080/teacher.html';
+      }else{
+        self.askToBeProfessor(hash);
+      }
+    }).catch(function(e){
+      console.log("ERROR: "+e);
+    })
+  },
+
+  getSmartIdContractAddress: function(){
+    UEManager.deployed().then(function(inst){
+      return inst.getSmartIdContractAddress.call();
+    }).then(function(res){
+      console.log(res)});
   },
 
   /*
@@ -155,20 +158,24 @@ window.App = {
     UEManager.deployed().then(function(instance){
       ue_manager = instance;
       var enrolledUEAddresses = [];
-      ue_manager.get_enrolled_ue(function(res,err){
-        if (err === null){
-          enrolledUEAddresses = res;
-          enrolledUEAddresses.forEach(element => {
-            ue_manager.get_student_info(element,function(res){
-              enrolledUEs.push(res);
-              console.log(res);
-              //console.log(enrolledUEs);
-            })
-          });
-        }
-      })
-    }).then(function(){
-      console.log(enrolledUEs);
+      console.log(ue_manager);
+      return ue_manager.get_enrolled_ue.call({from:account});
+    }).then(function(res){
+      console.log(res);
+      return res;
+    }).catch(function(e){
+      console.log(e);
+    })
+  },
+
+  
+  giveProfessorValidation: function(hash){
+    UEManager.deployed().then(function(instance){
+      return instance.giveProfessorValidation.sendTransaction(hash, {from:account});
+    }).then(function(res){
+      console.log(res);
+    }).catch(function(e){
+      console.log(e);
     })
   },
 
