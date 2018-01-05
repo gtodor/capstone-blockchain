@@ -22,104 +22,85 @@ var UEManager = contract(uemanager_artifacts);
 // For application bootstrapping, check out window.addEventListener below.
 var accounts;
 var account; // Current account
-var enrolledUEs = [];//all the ue where the student is enroled
+var ownedUEs = [];//all the ue where the student is enroled
 
 window.App = {
   start: function() {
     var self = this;
-
-    // Bootstrap the MetaCoin abstraction for Use.
-    UEManager.setProvider(web3.currentProvider);
-
-    console.log(web3);
-
-    // Get the initial account balance so it can be displayed.
-    web3.eth.getAccounts(function(err, accs) {
-      if (err != null) {
-        alert("There was an error fetching your accounts.");
-        return;
-      }
-
-      if (accs.length == 0) {
-        alert("Couldn't get any accounts! Make sure your Ethereum client is configured correctly.");
-        return;
-      }
-
-      accounts = accs;
-      account = accounts[0];
-      web3.eth.defaultAccount = account;
-	    document.getElementById("currentAccount").innerHTML = account;
-
-      //self.refreshUE();
-
-      // display accounts list
-      /*
-		  var accountList = document.getElementById('accountList');
-		  for(var i = 0; i < accounts.length; i++) {
-			  var opt = document.createElement('option');
-			  opt.innerHTML = accounts[i];
-			  opt.value = accounts[i];
-			  accountList.appendChild(opt);
-		  }
-      */
+    return new Promise(function(accept,reject){
+        // Bootstrap the MetaCoin abstraction for Use.
+        UEManager.setProvider(web3.currentProvider);
+    
+        // Get the initial account balance so it can be displayed.
+        
+        web3.eth.getAccounts(function(err, accs) {
+            if (err != null) {
+                alert("There was an error fetching your accounts.");
+                return;
+            }
+    
+            if (accs.length == 0) {
+                alert("Couldn't get any accounts! Make sure your Ethereum client is configured correctly.");
+                return;
+            }
+    
+            accounts = accs;
+            account = accounts[0];
+            web3.eth.defaultAccount = account;
+            //document.getElementById("currentAccount").innerHTML = account;
+            return accept();
+        });
     });
+    
   },
 
-  //refreshing the UEs
-
-  refreshUE: function() {
-    var self = this;
-    var ue;
-    UEContract.deployed.then(function(instance) {
-      ue = instance;
-      return meta.get_ue_name();
-    });
-  },
-
-  //creating an UE
-
-  //ask permission to be a teacher
-
-  askToBeProfessor : function(hash){
-    UEManager.deployed().then(function(instance) {
-      var ue_manager = instance;
-      var txhash = ue_manager.askProfessorValidation.sendTransaction(hash,{from:account,gas:4700000});
-      return txhash;
-    }).then(function(res){
-      console.log("resultat = "+res);
-      document.getElementById("infoMessage").innerHTML = "hash stored on blockchain. send an email to aaa@bbb.ccc with your hash to be accepted";
-      return res;
-    }).catch(function(e){
-      console.log("ERROR: "+e);
-    })
-  },
-
-  loginTeacher: function(){
-    var hash = document.getElementById("professorHash").value;
-    console.log(hash);
-    var self = this;
+  getOwnedUEs: function(){
+      var self = this;
     UEManager.deployed().then(function(instance){
-      console.log(account);
-      return instance.isProfessorValid.call(hash,{from:account});
+        console.log(account);
+        return instance.get_owned_ue.call({from:account});
     }).then(function(res){
-      console.log("result = "+ res);
-      if(res === true){
-        //route to teacher page
-        //document.getElementById('infoMessage').innerHTML = "Proffessor is accepted. Transfering to your page ...";
-        window.location = 'http://localhost:8080/teacher.html';
-      }else{
-        self.askToBeProfessor(hash);
-      }
+        console.log(res);
+        ownedUEs = res;
+        self.displayOwnedUes();
     }).catch(function(e){
-      console.log("ERROR: "+e);
+        console.log(e);
     })
   },
 
-  getSmartIdContractAddress: function(){
-    UEManager.deployed().then(function(inst){
-      return inst.getSmartIdContractAddress.call();
-    }).then(function(res){
-      console.log(res)});
+  displayOwnedUes: function(){
+      var select = document.getElementById("ownedUE");
+      for(var i=0; i< ownedUEs.length; i++){
+          var opt = ownedUEs[i];
+          var el = document.createElement("option");
+          el.textContent = opt;
+          el.value = opt;
+          select.appendChild(el);
+      }
+  },
+
+
+  createUE: function(){
+      var self = this;
+      UEManager.deployed().then(function(instance){
+        var hash = document.getElementById("hashProfessor").value;
+        var nomResponsable = document.getElementById("nomResponsable").value;
+        var nomUE = document.getElementById("nomUE").value;
+        var maxPlaces = parseInt(document.getElementById("maxPlaces").value);
+        if(hash && nomResponsable && nomUE && maxPlaces){
+            return instance.create_ue.sendTransaction(hash, nomResponsable, nomUE, maxPlaces,{from:account,gas:4700000});
+        }else{
+            return null;
+        }
+      }).then(function(res){
+        if(res !== null){
+            console.log(res);    
+        }else{
+            console.log("must fill all cases");
+        }
+      }).catch(function(e){
+          console.log(e);
+      })
   },
 
   /*
@@ -151,23 +132,8 @@ window.App = {
       self.setStatus("Erreur à la création, voir les logs");
 	  console.log(e);
     });
-  },*/
-
-  getEnrolledUEs : function (){
-    var ue_manager;
-    UEManager.deployed().then(function(instance){
-      ue_manager = instance;
-      var enrolledUEAddresses = [];
-      console.log(ue_manager);
-      return ue_manager.get_enrolled_ue.call({from:account});
-    }).then(function(res){
-      console.log(res);
-      return res;
-    }).catch(function(e){
-      console.log(e);
-    })
   },
-
+*/
   
   giveProfessorValidation: function(hash){
     UEManager.deployed().then(function(instance){
@@ -177,15 +143,7 @@ window.App = {
     }).catch(function(e){
       console.log(e);
     })
-  },
-
-  changeAccount: function ()
-	{
-		// console.log(document.getElementById("accountList").selectedIndex);
-		account = accounts[document.getElementById("accountList").selectedIndex];
-		document.getElementById("currentAccount").innerHTML = account;
-		// console.log("Current account : " + account);
-	}
+  }
 
 };
 
@@ -202,7 +160,9 @@ window.addEventListener('load', function() {
     console.error("Please use a web3 browser");
   }
 
-  App.start();
+  App.start().then(function(){
+      App.getOwnedUEs();
+  });
 });
 
 function refreshUEList(contractInstance)
