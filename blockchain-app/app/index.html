@@ -2,13 +2,45 @@
 <html>
 <head>
   <title>UE Contract first DAPP page</title>
-  <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>  
+  <!-- bootstrap -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">    
+  <!-- application script -->  
   <script src="./app.js"></script>
 </head>
 <body>
-
-  <header class="container-fluid">
+<!-- App header -->
+<!-- Always shows a header, even in smaller screens. -->
+<div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+  <header class="mdl-layout__header">
+    <div class="mdl-layout__header-row">
+      <!-- Title -->
+      <span class="mdl-layout-title">Blockchain CV</span>
+      <!-- Add spacer, to align navigation to the right -->
+      <div class="mdl-layout-spacer"></div>
+      <!-- Navigation. We hide it in small screens. -->
+      <nav class="mdl-navigation mdl-layout--large-screen-only">
+        <a class="mdl-navigation__link" href="/index.html">Home</a>
+        <a class="mdl-navigation__link" href="/login.html">Login</a>
+        <a class="mdl-navigation__link" href="">Link</a>
+        <a class="mdl-navigation__link" href="">Link</a>
+      </nav>
+    </div>
+  </header>
+  <div class="mdl-layout__drawer">
+    <span class="mdl-layout-title">Menu</span>
+    <nav class="mdl-navigation">
+      <a class="mdl-navigation__link" href="/index.html">Home</a>
+      <a class="mdl-navigation__link" href="/login.html">Login as teacher</a>      
+      <a class="mdl-navigation__link" href="">Link</a>
+      <a class="mdl-navigation__link" href="">Link</a>
+    </nav>
+  </div>
+  <main class="mdl-layout__content">
+    <div class="page-content">
+	<!-- Your content goes here -->	
+	<!-- OLD LOGIN STYLE : THIS WILL BE REMOVED 
+		<header class="container-fluid">
     <div class="row">
       <div class="pull-right">
           <h3>Log in as teacher</h3>
@@ -23,7 +55,8 @@
       </div>
     </div>
   </header>
-
+  -->
+  <!-- UE table bootstrap style (Andrei version) -->
   <div class="container-fluid">
       <div class="row">
         <h1>UE Enrolled List</h1>
@@ -71,6 +104,39 @@
           </form>
       </div>
   </div>
+  <!-- end UE table -->
+  
+  
+  <!-- UE table with selectable
+  
+  <div class="container-fluid">
+  <div class="row">
+  <h1>UE Enrolled List</h1>
+  <table class="mdl-data-table mdl-js-data-table mdl-data-table--selectable mdl-shadow--2dp">
+  <thead>
+    <tr>
+      <th class="mdl-data-table__cell--non-numeric">UE name</th>
+      <th>Status</th>      
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="mdl-data-table__cell--non-numeric">ipi</td>
+      <td>Not Validated</td>      
+    </tr>
+    <tr>
+      <td class="mdl-data-table__cell--non-numeric">ilo</td>
+      <td>Validated</td>      
+    </tr>
+    <tr>
+      <td class="mdl-data-table__cell--non-numeric">maths</td>
+      <td>Validated</td>      
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+  <!-- end UE table -->
   
 
    <!--<p><b style="color:red">Warning! Dev mode required (F12)</b></p>
@@ -101,6 +167,16 @@
   <br><button id="send" onclick="App.askToBeProfessor()">Submit</button>
 
   <br><button onclick="App.getEnrolledUEs()">Get getEnrolledUEs</button>-->
+	
+	
+	
+	<!-- end content -->
+	</div>
+  </main>
+</div>
+
+
+
 
   <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>

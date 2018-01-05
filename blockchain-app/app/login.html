@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>UE Contract first DAPP page</title>
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>  
+  <!-- bootstrap -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">    
+  <!-- application script -->  
+  <script src="./app.js"></script>
+</head>
+<body>
+<!-- App header -->
+<!-- Always shows a header, even in smaller screens. -->
+<div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+  <header class="mdl-layout__header">
+    <div class="mdl-layout__header-row">
+      <!-- Title -->
+      <span class="mdl-layout-title">Blockchain CV</span>
+      <!-- Add spacer, to align navigation to the right -->
+      <div class="mdl-layout-spacer"></div>
+      <!-- Navigation. We hide it in small screens. -->
+     <nav class="mdl-navigation mdl-layout--large-screen-only">
+		<a class="mdl-navigation__link" href="/index.html">Home</a>
+        <a class="mdl-navigation__link" href="/login.html">Login</a>        
+        <a class="mdl-navigation__link" href="">Link</a>
+        <a class="mdl-navigation__link" href="">Link</a>
+      </nav>
+    </div>
+  </header>
+  <div class="mdl-layout__drawer">
+    <span class="mdl-layout-title">Menu</span>
+    <nav class="mdl-navigation">
+	  <a class="mdl-navigation__link" href="/index.html">Home</a>
+      <a class="mdl-navigation__link" href="/login.html">Login as teacher</a>      
+      <a class="mdl-navigation__link" href="">Link</a>
+      <a class="mdl-navigation__link" href="">Link</a>
+    </nav>
+  </div>
+  <main class="mdl-layout__content">
+    <div class="page-content">
+	<!-- Your content goes here -->	
+          <h3>Log in as teacher</h3>
+          <form class="form-inline">
+              <div class="form-group">
+                  <label class="control-label" for="professorHash">Hash</label>
+                  <input type="text" class="form-control" id="professorHash" placeholder="Hash">
+                  <button type="submit" onclick="App.loginTeacher()" class="btn btn-default">Submit</button>
+              </div>
+          </form>
+          <span id="infoMessage"></span>
+	<!-- end content -->
+	</div>
+  </main>
+</div>
+
+  <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <!-- Include all compiled plugins (below), or include individual files as needed -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+</body>
+</html>
