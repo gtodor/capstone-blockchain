@@ -68,8 +68,23 @@ window.App = {
     })
   },
 
+  selectUEChanged: function(){
+    var select = document.getElementById("ownedUE");
+    var address = select.value;
+    console.log(address);
+    UEManager.deployed().then(function(instance){
+        return instance.getUEAtAddress.call(address,{from:account});
+    }).then(function(res){
+        console.log(res);
+        document.getElementById("ownedUEName").innerHTML = res;
+    }).catch(function(e){
+        console.log(e);
+    })
+  },
+
   displayOwnedUes: function(){
       var select = document.getElementById("ownedUE");
+      select.innerHTML = '';
       for(var i=0; i< ownedUEs.length; i++){
           var opt = ownedUEs[i];
           var el = document.createElement("option");
@@ -94,7 +109,9 @@ window.App = {
         }
       }).then(function(res){
         if(res !== null){
-            console.log(res);    
+            console.log(res);
+            document.getElementById("infoCreateUE").innerHTML = "UE created successfully";
+            //self.getOwnedUEs();    
         }else{
             console.log("must fill all cases");
         }
@@ -103,38 +120,6 @@ window.App = {
       })
   },
 
-  /*
-  createUE: function() {
-    var self = this;
-    var ue;
-    UEContract.deployed().then(function(instance) {
-      //check l'autorisation à un moment ?
-      ue = instance;
-      console.log(ue);
-      var nomResponsable = document.getElementById("nomResponsable").value;
-      var nomUE = document.getElementById("nomUE").value;
-      var maxPlaces = parseInt(document.getElementById("maxPlaces").value);
-	  if(nomResponsable && 	nomUE && maxPlaces){
-	  var contractInstance = UEContract.new(nomResponsable, nomUE, maxPlaces,{from: web3.eth.accounts[0], gas: 3000000}).then(function(value) {
-		// fulfillment
-		//refreching UEL list
-		refreshUEList(value);
-		self.setStatus("Création d'UE effectuée")
-		}, function(reason) {
-		// rejection
-		console.log(reason);
-		});
-		}else{
-		self.setStatus("Champs vides!");
-	}
-    }).catch(function(e) {
-      console.log(e);
-      self.setStatus("Erreur à la création, voir les logs");
-	  console.log(e);
-    });
-  },
-*/
-  
   giveProfessorValidation: function(hash){
     UEManager.deployed().then(function(instance){
       return instance.giveProfessorValidation.sendTransaction(hash, {from:account});

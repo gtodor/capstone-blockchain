@@ -23,46 +23,37 @@ var UEManager = contract(uemanager_artifacts);
 var accounts;
 var account; // Current account
 var enrolledUEs = [];//all the ue where the student is enroled
+var allUEs = [];
+var enrollUESelected;
 
 window.App = {
   start: function() {
     var self = this;
-
-    // Bootstrap the MetaCoin abstraction for Use.
-    UEManager.setProvider(web3.currentProvider);
-
-    console.log(web3);
-
-    // Get the initial account balance so it can be displayed.
-    web3.eth.getAccounts(function(err, accs) {
-      if (err != null) {
-        alert("There was an error fetching your accounts.");
-        return;
-      }
-
-      if (accs.length == 0) {
-        alert("Couldn't get any accounts! Make sure your Ethereum client is configured correctly.");
-        return;
-      }
-
-      accounts = accs;
-      account = accounts[0];
-      web3.eth.defaultAccount = account;
-	    document.getElementById("currentAccount").innerHTML = account;
-
-      //self.refreshUE();
-
-      // display accounts list
-      /*
-		  var accountList = document.getElementById('accountList');
-		  for(var i = 0; i < accounts.length; i++) {
-			  var opt = document.createElement('option');
-			  opt.innerHTML = accounts[i];
-			  opt.value = accounts[i];
-			  accountList.appendChild(opt);
-		  }
-      */
+    return new Promise(function(accept,reject){
+        // Bootstrap the MetaCoin abstraction for Use.
+        UEManager.setProvider(web3.currentProvider);
+    
+        // Get the initial account balance so it can be displayed.
+        
+        web3.eth.getAccounts(function(err, accs) {
+            if (err != null) {
+                alert("There was an error fetching your accounts.");
+                return;
+            }
+    
+            if (accs.length == 0) {
+                alert("Couldn't get any accounts! Make sure your Ethereum client is configured correctly.");
+                return;
+            }
+    
+            accounts = accs;
+            account = accounts[0];
+            web3.eth.defaultAccount = account;
+            //document.getElementById("currentAccount").innerHTML = account;
+            return accept();
+        });
     });
+    
   },
 
   //refreshing the UEs
@@ -122,52 +113,91 @@ window.App = {
       console.log(res)});
   },
 
-  /*
-  createUE: function() {
-    var self = this;
-    var ue;
-    UEContract.deployed().then(function(instance) {
-      //check l'autorisation à un moment ?
-      ue = instance;
-      console.log(ue);
-      var nomResponsable = document.getElementById("nomResponsable").value;
-      var nomUE = document.getElementById("nomUE").value;
-      var maxPlaces = parseInt(document.getElementById("maxPlaces").value);
-	  if(nomResponsable && 	nomUE && maxPlaces){
-	  var contractInstance = UEContract.new(nomResponsable, nomUE, maxPlaces,{from: web3.eth.accounts[0], gas: 3000000}).then(function(value) {
-		// fulfillment
-		//refreching UEL list
-		refreshUEList(value);
-		self.setStatus("Création d'UE effectuée")
-		}, function(reason) {
-		// rejection
-		console.log(reason);
-		});
-		}else{
-		self.setStatus("Champs vides!");
-	}
-    }).catch(function(e) {
-      console.log(e);
-      self.setStatus("Erreur à la création, voir les logs");
-	  console.log(e);
-    });
-  },*/
-
   getEnrolledUEs : function (){
-    var ue_manager;
     UEManager.deployed().then(function(instance){
-      ue_manager = instance;
       var enrolledUEAddresses = [];
-      console.log(ue_manager);
-      return ue_manager.get_enrolled_ue.call({from:account});
+      return instance.get_enrolled_ue.call({from:account});
     }).then(function(res){
-      console.log(res);
+      //console.log(res);
       return res;
     }).catch(function(e){
       console.log(e);
     })
   },
 
+  getAllUEs: function(){
+    var self = this;
+    UEManager.deployed().then(function(instance){
+      return instance.get_number_of_ue.call({from:account});
+    }).then(function(res){
+      console.log(res.toNumber());
+      var nb = res.toNumber();
+      var promises = [];
+      for(var i=0;i<nb;i++){
+        promises.push(self.getName(i));
+      }
+      Promise.all(promises).then(function(){
+        console.log(allUEs.length);
+        if(allUEs.length !== 0){
+          enrollUESelected = allUEs[0];
+        }
+        self.fillAllUEList();
+      })
+    }).catch(function(e){
+      console.log(e);
+    })
+  },
+
+  getName: function(i){
+    return new Promise(function(accept,reject){
+      var ii=new BigNumber(i);
+      console.log(i);
+      UEManager.deployed().then(function(instance){
+        return instance.get_ue_names.call(ii,{from:account});
+      }).then(function(res){
+        console.log(res);
+        allUEs.push(res);
+        return accept();
+      }).catch(function(e){
+        console.log(e);
+        return reject();
+      })
+    });
+  },
+
+  fillAllUEList: function(){
+    var select = document.getElementById("ueSelect");
+    select.innerHTML = '';
+    console.log(allUEs);
+    console.log(allUEs.length);
+    for(var i=0; i< allUEs.length; i++){
+        var opt = allUEs[i];
+        var el = document.createElement("option");
+        el.textContent = opt;
+        el.value = opt;
+        select.appendChild(el);
+    }
+  },
+
+  selectEnrollUE: function(){
+    var select = document.getElementById("ueSelect");
+    console.log(select.value);
+    enrollUESelected = select.value;
+  },
+
+  enroll: function(){
+    var name = document.getElementById("studentName").value;
+    if(name && enrollUESelected){
+      console.log(name);
+      UEManager.deployed().then(function(instance){
+        return instance.enroll.sendTransaction(name,enrollUESelected,{from:account,gas:5000000});
+      }).then(function(res){
+        console.log(res);
+      }).catch(function(e){
+        console.log(e);
+      })
+    }
+  },
   
   giveProfessorValidation: function(hash){
     UEManager.deployed().then(function(instance){
@@ -202,7 +232,10 @@ window.addEventListener('load', function() {
     console.error("Please use a web3 browser");
   }
 
-  App.start();
+  App.start().then(function(){
+    App.getEnrolledUEs();
+    App.getAllUEs();
+  });
 });
 
 function refreshUEList(contractInstance)

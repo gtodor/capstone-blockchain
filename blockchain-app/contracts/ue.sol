@@ -83,6 +83,11 @@ contract ue_manager{
         bool res = professorId.acceptEndorsement("professor",_hash);
         return res;
     }
+
+    function getUEAtAddress(address ue_addr) public constant returns(string){
+        require(bytes(ue_names_map[ue_addr]).length != 0);
+        return ue_names_map[ue_addr];
+    }
     
     
     function bytes32ToString(bytes32 x) constant returns (string) {

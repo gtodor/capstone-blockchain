@@ -92,14 +92,11 @@
           <form class="form-inline">
               <div class="form-group">
                   <label class="control-label" for="ueSelect">Choose UE</label>
-                  <select class="form-control" id="ueSelect" placeholder="Choose UE">
-                      <option>1</option>
-                      <option>2</option>
-                      <option>3</option>
-                      <option>4</option>
-                      <option>5</option>
+                  <select class="form-control" id="ueSelect" onchange="App.selectEnrollUE()" placeholder="Choose UE">
+                      
                   </select>
-                  <button type="submit" class="btn btn-default">Enroll</button>
+                  <input type="text" class="form-control" id="studentName" placeholder="Name"/>
+                  <button type="submit" class="btn btn-default" onclick="App.enroll()">Enroll</button>
               </div>
           </form>
       </div>

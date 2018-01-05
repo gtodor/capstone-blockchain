@@ -47,7 +47,7 @@
                             <form class="form-inline">
                                 <div class="form-group">
                                     <label class="control-label" for="ownedUESelect">Choose Owned UE</label>
-                                    <select class="form-control" id="ownedUE" placeholder="Choose Owned UE">
+                                    <select class="form-control" id="ownedUE" onchange="App.selectUEChanged()" placeholder="Choose Owned UE">
                                         
                                     </select>
                                 </div>
@@ -101,6 +101,7 @@
                                 </div>
                             </div>
                             <button id="send" onclick="App.createUE()">Créer UE</button>
+                            <span id="infoCreateUE"></span>
                         </form>
                     </div>
                 </div>
