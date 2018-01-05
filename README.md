@@ -54,7 +54,9 @@ in the console
 
 then copy the address of SmartIdentity (use ```truffle networks```) and do in the console:
 
-```ue_manager.deployed().then(function(inst){ return inst.createSmartId('<SmartIdentity address>')```
+```ue_manager.deployed().then(function(inst){ return inst.createSmartId('<SmartIdentity address>');})```
+
+- Don't forget to run truffle deploy
 
 - Check the doc file:  https://github.com/gtodor/capstone-blockchain/blob/master/documentation/liste.md
 
