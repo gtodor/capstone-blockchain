@@ -183,5 +183,12 @@ contract ue_manager{
         uint res = ue_con.get_free_places();
         return res;
     }
+
+    function validateUE(string  ue, address student_addr) public returns (bool){
+        require(ue_addresses[ue] != 0x0);
+        ue_contract ue_con = ue_contract(ue_addresses[ue]);
+        bool res = ue_con.validateUE(msg.sender, student_addr);
+        return res;
+    }
     
 }

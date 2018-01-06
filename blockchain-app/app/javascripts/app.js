@@ -25,6 +25,7 @@ var account; // Current account
 var enrolledUEs = [];//all the ue where the student is enroled
 var allUEs = [];
 var enrollUESelected;
+var enrolledUEAddresses = [];
 
 window.App = {
   start: function() {
@@ -114,15 +115,57 @@ window.App = {
   },
 
   getEnrolledUEs : function (){
+    var self = this;
     UEManager.deployed().then(function(instance){
-      var enrolledUEAddresses = [];
       return instance.get_enrolled_ue.call({from:account});
     }).then(function(res){
-      //console.log(res);
-      return res;
+      console.log(res);
+      enrolledUEAddresses = res;
+      var promises = res.map(function(addr){
+        return new Promise(function(accept,reject){
+          UEManager.deployed().then(function(instance){
+            return instance.get_student_info.call(addr,{from:this});
+          }).then(function(res){
+            enrolledUEs.push(res);
+            return accept();
+          }).catch(function(e){
+            console.log(e);
+            return reject();
+          })
+        })
+      })
+      Promise.all(promises).then(function(){
+        //fill the table with the enrolled ue
+        self.fillTable();
+      })
     }).catch(function(e){
       console.log(e);
     })
+  },
+
+  fillTable: function(){
+    var table = document.getElementById("tableBody");
+    table.innerHTML = '';
+    console.log(enrolledUEs);
+    for(var i=0; i<enrolledUEs.length; i++){
+      var tr= document.createElement("tr");
+      var th = document.createElement("th");
+      th.setAttribute("scope","row");
+      th.textContent = i;
+      var td1 = document.createElement("td");
+      var td2 = document.createElement("td");
+      td1.textContent = enrolledUEs[i][2];
+      if(enrolledUEs[i][1] === false){
+        td2.textContent = "Not Validated";
+      }else{
+        td2.textContent = "Validated";
+      }
+      
+      tr.appendChild(th);
+      tr.appendChild(td1);
+      tr.appendChild(td2);
+      table.appendChild(tr);
+    }
   },
 
   getAllUEs: function(){
@@ -190,7 +233,7 @@ window.App = {
     if(name && enrollUESelected){
       console.log(name);
       UEManager.deployed().then(function(instance){
-        return instance.enroll.sendTransaction(name,enrollUESelected,{from:account,gas:5000000});
+        return instance.enroll.sendTransaction(name,enrollUESelected,{from:account,gas:470000});
       }).then(function(res){
         console.log(res);
       }).catch(function(e){

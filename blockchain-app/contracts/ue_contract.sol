@@ -44,6 +44,7 @@ contract ue_contract{
         require(sender == resp_addr);
         require(students[student_addr].name.length != 0);
         students[student_addr].status = true;
+        return true;
     }
     
     

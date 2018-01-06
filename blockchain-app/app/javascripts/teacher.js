@@ -23,6 +23,10 @@ var UEManager = contract(uemanager_artifacts);
 var accounts;
 var account; // Current account
 var ownedUEs = [];//all the ue where the student is enroled
+var currentUEDisplayed;
+var studentNames = [];
+var studentAddresses = [];
+var studentStatus = [];
 
 window.App = {
   start: function() {
@@ -61,8 +65,26 @@ window.App = {
         return instance.get_owned_ue.call({from:account});
     }).then(function(res){
         console.log(res);
-        ownedUEs = res;
-        self.displayOwnedUes();
+        var promises = res.map(function(addr){
+            return new Promise(function(accept,reject){
+                UEManager.deployed().then(function(instance){
+                return instance.getUEAtAddress.call(addr,{from:this});
+                }).then(function(res){
+                    ownedUEs.push(res);
+                    return accept();
+                }).catch(function(e){
+                    console.log(e);
+                    return reject();
+                })
+            })
+        })
+        Promise.all(promises).then(function(){
+            currentUEDisplayed = ownedUEs[0];
+            self.displayOwnedUes();
+            self.getEnrolledStudents().then(function(){
+                self.getInfoStudents();
+            });
+        })
     }).catch(function(e){
         console.log(e);
     })
@@ -70,28 +92,27 @@ window.App = {
 
   selectUEChanged: function(){
     var select = document.getElementById("ownedUE");
-    var address = select.value;
-    console.log(address);
-    UEManager.deployed().then(function(instance){
-        return instance.getUEAtAddress.call(address,{from:account});
-    }).then(function(res){
-        console.log(res);
-        document.getElementById("ownedUEName").innerHTML = res;
-    }).catch(function(e){
-        console.log(e);
-    })
+    var ue = select.value;
+    var self = this;
+    console.log(ue);
+    document.getElementById("ownedUEName").innerHTML = ue;
+    currentUEDisplayed = ue;
+    this.getEnrolledStudents().then(function(){
+        self.getInfoStudents();
+    });
   },
 
   displayOwnedUes: function(){
-      var select = document.getElementById("ownedUE");
-      select.innerHTML = '';
-      for(var i=0; i< ownedUEs.length; i++){
-          var opt = ownedUEs[i];
-          var el = document.createElement("option");
-          el.textContent = opt;
-          el.value = opt;
-          select.appendChild(el);
-      }
+    var select = document.getElementById("ownedUE");
+    select.innerHTML = '';
+    for(var i=0; i< ownedUEs.length; i++){
+        var opt = ownedUEs[i];
+        var el = document.createElement("option");
+        el.textContent = opt;
+        el.value = opt;
+        select.appendChild(el);
+    }
+    document.getElementById('ownedUEName').innerHTML = currentUEDisplayed; 
   },
 
 
@@ -118,6 +139,143 @@ window.App = {
       }).catch(function(e){
           console.log(e);
       })
+  },
+
+  getEnrolledStudents: function(){
+    var self = this;
+    return new Promise(function(accept,reject){
+        var ue = currentUEDisplayed;
+        studentNames = [];
+        studentAddresses = [];
+        studentStatus = [];
+        UEManager.deployed().then(function(instance){
+            console.log("current UE is "+currentUEDisplayed);
+            return instance.get_number_of_enrolled_students.call(currentUEDisplayed,{from:account});
+        }).then(function(res){
+            console.log(res.toNumber());
+            var nb = res.toNumber();
+            var promises = [];
+            for(var i=0;i<nb;i++){
+                promises.push(self.getName(i,ue));
+            }
+            Promise.all(promises).then(function(){
+                var addrPromises = [];
+                for(var i=0;i<nb;i++){
+                addrPromises.push(self.getAddress(i,ue));
+                }
+                Promise.all(addrPromises).then(function(){
+                    console.log(studentAddresses);
+                    //self.fillTable();
+                    return accept();
+                })
+            })
+        }).catch(function(e){
+            console.log(e);
+            return reject();
+        })
+    }) 
+  },
+
+  getInfoStudents:function(){
+      console.log(studentAddresses.length);
+    var promises = studentAddresses.map(function(addr){
+        return new Promise(function(accept,reject){
+          UEManager.deployed().then(function(instance){
+            return instance.get_student_info.call(addr,{from:this});
+          }).then(function(res){
+              console.log(res);
+            //studentStatus.push(res[1]);
+            return accept();
+          }).catch(function(e){
+            console.log(e);
+            return reject();
+          })
+        })
+    });
+    Promise.all(promises).then(function(){
+        //fill the table with the enrolled ue
+        console.log(studentStatus);
+        self.fillTable();
+    })
+  },
+
+  getName: function(i,ue){
+    return new Promise(function(accept,reject){
+      var ii=new BigNumber(i);
+      console.log(i);
+      UEManager.deployed().then(function(instance){
+        return instance.get_students_name.call(ii,ue,{from:account});
+      }).then(function(res){
+        console.log(res);
+        studentNames.push(res);
+        return accept();
+      }).catch(function(e){
+        console.log(e);
+        return reject();
+      })
+    });
+  },
+
+  getAddress: function(i,ue){
+    return new Promise(function(accept,reject){
+      var ii=new BigNumber(i);
+      console.log(i);
+      UEManager.deployed().then(function(instance){
+        return instance.get_students_address.call(ii,ue,{from:account});
+      }).then(function(res){
+        console.log(res);
+        studentAddresses.push(res);
+        return accept();
+      }).catch(function(e){
+        console.log(e);
+        return reject();
+      })
+    });
+  },
+
+  fillTable: function(){
+    var table = document.getElementById("tableBody");
+    table.innerHTML = '';
+    console.log(studentNames);
+    for(var i=0; i<studentNames.length; i++){
+      var tr= document.createElement("tr");
+      var th = document.createElement("th");
+      th.setAttribute("scope","row");
+      th.textContent = i;
+      var td1 = document.createElement("td");
+      var td2 = document.createElement("td");
+      var td3 = document.createElement("td");
+      td1.textContent = studentNames[i];
+      td2.textContent = studentAddresses[i];
+      if(studentStatus[i] === false){
+        td3.innerHTML = "<button class=\"btn btn-default\" onclick=\"App.validateStudentUE(this,"+i+")\">Validate</button>";
+      }else{
+        td3.innerHTML = "VALIDATED"
+      }
+      tr.appendChild(th);
+      tr.appendChild(td1);
+      tr.appendChild(td2);
+      tr.appendChild(td3);
+      table.appendChild(tr);
+    }
+  },
+
+  validateStudentUE: function(cell,i){
+    console.log(i);
+    console.log(currentUEDisplayed);
+    console.log(studentAddresses[i]);
+    var ue = currentUEDisplayed;
+    var addr = studentAddresses[i];
+    var self = this;
+    UEManager.deployed().then(function(instance){
+        return instance.validateUE.sendTransaction(ue, addr, {from:account});
+    }).then(function(res){
+        console.log(res);
+        cell.innerHTML = "";
+        cell.innerHTML = "VALIDATED"
+    }).catch(function(e){
+        console.log(e);
+    })
   },
 
   giveProfessorValidation: function(hash){
