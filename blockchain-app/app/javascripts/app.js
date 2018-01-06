@@ -124,7 +124,8 @@ window.App = {
       var promises = res.map(function(addr){
         return new Promise(function(accept,reject){
           UEManager.deployed().then(function(instance){
-            return instance.get_student_info.call(addr,{from:this});
+            typeof(addr);
+            return instance.get_student_info.call(addr,{from:account});
           }).then(function(res){
             enrolledUEs.push(res);
             return accept();

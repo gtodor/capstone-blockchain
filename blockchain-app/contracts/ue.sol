@@ -138,6 +138,14 @@ contract ue_manager{
         address res = ue_con.get_students_address(msg.sender,index);
         return res;
     }
+
+    function get_students_status(uint index, string ue_voulu) public constant returns (bool){
+        require(bytes(responsables[msg.sender].name).length != 0);
+        require(ue_addresses[ue_voulu] != 0);
+        ue_contract ue_con = ue_contract(ue_addresses[ue_voulu]);
+        bool res = ue_con.get_students_status(msg.sender,index);
+        return res;
+    }
     
     function get_student_info(address ue_addr) public constant returns (string,bool,string){
         require(bytes(ue_names_map[ue_addr]).length != 0);

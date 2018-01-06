@@ -76,6 +76,12 @@ contract ue_contract{
         require(index>=0 && index < student_index.length);
         return student_index[index];
     }
+
+    function get_students_status(address sender, uint index) public constant returns (bool){
+        require(sender == resp_addr);
+        require(index>=0 && index < student_index.length);
+        return students[student_index[index]].status;
+    }
     
     function get_student_info(address student) public constant returns (bytes32,bool){
         require(students[student].name.length != 0);

@@ -81,9 +81,7 @@ window.App = {
         Promise.all(promises).then(function(){
             currentUEDisplayed = ownedUEs[0];
             self.displayOwnedUes();
-            self.getEnrolledStudents().then(function(){
-                self.getInfoStudents();
-            });
+            self.getEnrolledStudents();
         })
     }).catch(function(e){
         console.log(e);
@@ -97,9 +95,7 @@ window.App = {
     console.log(ue);
     document.getElementById("ownedUEName").innerHTML = ue;
     currentUEDisplayed = ue;
-    this.getEnrolledStudents().then(function(){
-        self.getInfoStudents();
-    });
+    this.getEnrolledStudents();
   },
 
   displayOwnedUes: function(){
@@ -143,60 +139,55 @@ window.App = {
 
   getEnrolledStudents: function(){
     var self = this;
-    return new Promise(function(accept,reject){
-        var ue = currentUEDisplayed;
-        studentNames = [];
-        studentAddresses = [];
-        studentStatus = [];
-        UEManager.deployed().then(function(instance){
-            console.log("current UE is "+currentUEDisplayed);
-            return instance.get_number_of_enrolled_students.call(currentUEDisplayed,{from:account});
-        }).then(function(res){
-            console.log(res.toNumber());
-            var nb = res.toNumber();
-            var promises = [];
-            for(var i=0;i<nb;i++){
-                promises.push(self.getName(i,ue));
-            }
-            Promise.all(promises).then(function(){
-                var addrPromises = [];
-                for(var i=0;i<nb;i++){
+      var ue = currentUEDisplayed;
+      studentNames = [];
+      studentAddresses = [];
+      studentStatus = [];
+      UEManager.deployed().then(function(instance){
+          console.log("current UE is "+currentUEDisplayed);
+          return instance.get_number_of_enrolled_students.call(currentUEDisplayed,{from:account});
+      }).then(function(res){
+          console.log(res.toNumber());
+          var nb = res.toNumber();
+          var promises = [];
+          for(var i=0;i<nb;i++){
+              promises.push(self.getName(i,ue));
+          }
+          Promise.all(promises).then(function(){
+              var addrPromises = [];
+              for(var i=0;i<nb;i++){
                 addrPromises.push(self.getAddress(i,ue));
-                }
-                Promise.all(addrPromises).then(function(){
-                    console.log(studentAddresses);
-                    //self.fillTable();
-                    return accept();
-                })
-            })
-        }).catch(function(e){
-            console.log(e);
-            return reject();
-        })
-    }) 
+              }
+              Promise.all(addrPromises).then(function(){
+                  var statusPromises = [];
+                  for(var i=0; i<nb;i++){
+                    statusPromises.push(self.getStatus(i,ue));
+                  }
+                  Promise.all(statusPromises).then(function(){
+                    self.fillTable();
+                  })
+              })
+          })
+      }).catch(function(e){
+          console.log(e);
+      })
   },
 
-  getInfoStudents:function(){
-      console.log(studentAddresses.length);
-    var promises = studentAddresses.map(function(addr){
-        return new Promise(function(accept,reject){
-          UEManager.deployed().then(function(instance){
-            return instance.get_student_info.call(addr,{from:this});
-          }).then(function(res){
-              console.log(res);
-            //studentStatus.push(res[1]);
-            return accept();
-          }).catch(function(e){
-            console.log(e);
-            return reject();
-          })
-        })
+  getStatus: function(i,ue){
+    return new Promise(function(accept,reject){
+      var ii=new BigNumber(i);
+      console.log(i);
+      UEManager.deployed().then(function(instance){
+        return instance.get_students_status.call(ii,ue,{from:account});
+      }).then(function(res){
+        console.log(res);
+        studentStatus.push(res);
+        return accept();
+      }).catch(function(e){
+        console.log(e);
+        return reject();
+      })
     });
-    Promise.all(promises).then(function(){
-        //fill the table with the enrolled ue
-        console.log(studentStatus);
-        self.fillTable();
-    })
   },
 
   getName: function(i,ue){
@@ -272,7 +263,8 @@ window.App = {
     }).then(function(res){
         console.log(res);
         cell.innerHTML = "";
-        cell.innerHTML = "VALIDATED"
+        cell.setAttribute('disabled',true);
+        cell.innerHTML = "VALIDATED";
     }).catch(function(e){
         console.log(e);
     })
