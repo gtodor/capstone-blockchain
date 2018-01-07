@@ -19,21 +19,19 @@
       <!-- Add spacer, to align navigation to the right -->
       <div class="mdl-layout-spacer"></div>
       <!-- Navigation. We hide it in small screens. -->
-     <nav class="mdl-navigation mdl-layout--large-screen-only">
-		<a class="mdl-navigation__link" href="/index.html">Home</a>
-        <a class="mdl-navigation__link" href="/login.html">Login</a>        
-        <a class="mdl-navigation__link" href="">Link</a>
-        <a class="mdl-navigation__link" href="">Link</a>
+      <nav class="mdl-navigation mdl-layout--large-screen-only">
+        <a class="mdl-navigation__link" href="/index.html">Home</a>
+        <a class="mdl-navigation__link" href="/login.html">Login</a>
+        <a class="mdl-navigation__link" href="/teacher.html">UE</a>        
       </nav>
     </div>
   </header>
   <div class="mdl-layout__drawer">
     <span class="mdl-layout-title">Menu</span>
     <nav class="mdl-navigation">
-	  <a class="mdl-navigation__link" href="/index.html">Home</a>
+      <a class="mdl-navigation__link" href="/index.html">Home</a>
       <a class="mdl-navigation__link" href="/login.html">Login as teacher</a>      
-      <a class="mdl-navigation__link" href="">Link</a>
-      <a class="mdl-navigation__link" href="">Link</a>
+      <a class="mdl-navigation__link" href="/teacher.html">UE Lab</a>      
     </nav>
   </div>
   <main class="mdl-layout__content">
@@ -44,7 +42,7 @@
               <div class="form-group">
                   <label class="control-label" for="professorHash">Hash</label>
                   <input type="text" class="form-control" id="professorHash" placeholder="Hash">
-                  <button onclick="App.loginTeacher()" class="btn btn-default">Submit</button>
+                  <button onclick="App.loginTeacher()" class="btn btn-default">Valider</button>
               </div>
           </form>
           <span id="infoMessage"></span>
